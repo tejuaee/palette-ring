@@ -1,23 +1,80 @@
-# Palette Ring
+<p align="center">
+  <img src="docs/banner.png" alt="palette ring" width="100%">
+</p>
 
-A tiny macOS menu-bar app: select a photo in Finder, **hold Shift**, and its colour palette appears in a ring around your cursor. Move onto a colour and **release Shift**. The palette is saved to Downloads (`<photo> palette.png` + `<photo> palette.css`) and the colour you picked is copied as a hex code.
+<p align="center">
+  <i>a tiny menu-bar app that pulls the colours out of your photos</i>
+</p>
 
-Release Shift while the cursor is still on the photo in the middle to cancel. Shift-clicking or moving the mouse right after pressing Shift counts as Finder multi-select, so the ring stays out of the way.
+<br>
 
-## Build & run
+<p align="center">
+  <img src="docs/ring-blush.png" width="30%" alt="blush palette ring">
+  <img src="docs/ring-honey.png" width="30%" alt="honey palette ring">
+  <img src="docs/ring-lilac.png" width="30%" alt="lilac palette ring">
+</p>
+
+<br>
+
+## ◐ &nbsp;how it feels
+
+select a photo in Finder, **hold** <kbd>⇧</kbd>, and its colours bloom in a ring around your cursor.
+glide onto the one you like and let go.
+
+- the colour you picked is **copied** as a hex code, ready to paste
+- the whole palette is **saved** to Downloads as a png and a css file
+- let go while you're still on the photo in the middle to **cancel**
+- shift-clicking to select lots of photos in Finder won't open the ring, so it stays out of the way
+
+<p align="center">
+  <img src="docs/palette.png" width="80%" alt="saved palette">
+</p>
+
+<p align="center">
+  <sub>the palette it saves to Downloads</sub>
+</p>
+
+<br>
+
+## ☕︎ &nbsp;install
 
 ```sh
+git clone https://github.com/tejuaee/palette-ring.git
+cd palette-ring
 ./build.sh
 open "build/Palette Ring.app"
 ```
 
-The first time it runs, macOS asks to let Palette Ring control Finder. Click **OK**, because that's how it reads which photo is selected. No Accessibility permission is needed.
+you'll need the Xcode command line tools for `swiftc` (`xcode-select --install`).
+a little <code>◐</code> appears in your menu bar while it's running.
 
-## How it works
+the first time, macOS asks to let Palette Ring control Finder. click **OK**, because that's how it sees which photo you've selected. no Accessibility permission needed ♡
 
-- Polls the Shift key state about 60 times a second, only while Finder is frontmost.
-- Asks Finder for the current selection through AppleScript.
-- Shrinks the photo to 96 px and runs k-means (k = 6) to find the dominant colours.
-- Draws the ring in a transparent, click-through panel.
+<details>
+<summary><b>how it works</b></summary>
+<br>
 
-Headless check: `PaletteRing --preview <image> <outdir>` prints the hex codes and writes the palette files plus a ring preview image.
+- checks the Shift key about 60 times a second, but only while Finder is in front
+- asks Finder for the current selection through AppleScript
+- shrinks the photo to 96 px and runs k-means (k = 6) to find the main colours
+- draws the ring in a see-through panel that clicks pass straight through
+</details>
+
+<details>
+<summary><b>from the terminal</b></summary>
+<br>
+
+```sh
+"build/Palette Ring.app/Contents/MacOS/PaletteRing" --preview photo.jpg out/
+```
+
+prints the hex codes and writes the palette files plus a ring preview image.
+</details>
+
+<br>
+
+<p align="center">
+  <sub>one swift file · no dependencies · made for fun ♡</sub>
+  <br>
+  <sub>pairs nicely with <a href="https://github.com/tejuaee/moodboard-maker">moodboard maker</a></sub>
+</p>
