@@ -202,7 +202,7 @@ final class RingView: NSView {
 // MARK: - App
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
-    enum State { case idle, pending(Date), showing(Date), waitRelease }
+    enum State { case idle, pending(Date, NSPoint), showing(Date), waitRelease }
     var state = State.idle
     var panel: NSPanel!
     let ring = RingView(frame: NSRect(x: 0, y: 0, width: 260, height: 260))
@@ -238,20 +238,25 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func tick() {
         let flags = NSEvent.modifierFlags.intersection([.shift, .command, .option, .control])
         let shiftOnly = flags == .shift, shiftDown = flags.contains(.shift)
+        // Shift + click / drag is Finder multi-select, not a ring request.
+        let clicking = NSEvent.pressedMouseButtons != 0
         switch state {
         case .idle:
             if shiftOnly && NSWorkspace.shared.frontmostApplication?.bundleIdentifier == "com.apple.finder" {
-                state = .pending(Date())
+                state = clicking ? .waitRelease : .pending(Date(), NSEvent.mouseLocation)
             }
-        case .pending(let since):
+        case .pending(let since, let start):
+            let m = NSEvent.mouseLocation
             if !shiftOnly { state = .idle }
+            else if clicking || hypot(m.x - start.x, m.y - start.y) > 6 { state = .waitRelease }
             else if Date().timeIntervalSince(since) > 0.25 { state = trigger() ? .showing(Date()) : .waitRelease }
         case .showing(let since):
             ring.progress = CGFloat(Date().timeIntervalSince(since) / 0.28)
             let m = NSEvent.mouseLocation
             ring.hovered = ring.wedge(dx: m.x - center.x, dy: m.y - center.y)
             ring.needsDisplay = true
-            if !shiftDown { release(); state = .idle }
+            if clicking { hide(after: 0); state = .waitRelease }   // they were selecting files after all
+            else if !shiftDown { release(); state = .idle }
         case .waitRelease:
             if !shiftDown { state = .idle }
         }

@@ -2,7 +2,7 @@
 
 A tiny macOS menu-bar app: select a photo in Finder, **hold Shift**, and its colour palette appears in a ring around your cursor. Move onto a colour and **release Shift**. The palette is saved to Downloads (`<photo> palette.png` + `<photo> palette.css`) and the colour you picked is copied as a hex code.
 
-Release Shift while the cursor is still on the photo in the middle to cancel.
+Release Shift while the cursor is still on the photo in the middle to cancel. Shift-clicking or moving the mouse right after pressing Shift counts as Finder multi-select, so the ring stays out of the way.
 
 ## Build & run
 
