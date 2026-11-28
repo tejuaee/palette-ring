@@ -27,8 +27,11 @@ func extractPalette(_ url: URL, k: Int = 6) -> [NSColor] {
         ctx.draw(img, in: CGRect(x: 0, y: 0, width: w, height: h))
     }
     var px: [RGB] = []
+    // The bitmap is premultiplied, so soft edges of a cut-out read darker than they are
+    // and showed up as extra muddy swatches. Divide the alpha back out.
     for i in stride(from: 0, to: data.count, by: 4) where data[i + 3] > 128 {
-        px.append(RGB(r: Double(data[i]), g: Double(data[i + 1]), b: Double(data[i + 2])))
+        let a = Double(data[i + 3]) / 255
+        px.append(RGB(r: Double(data[i]) / a, g: Double(data[i + 1]) / a, b: Double(data[i + 2]) / a))
     }
     guard px.count >= k else { return [] }
 
